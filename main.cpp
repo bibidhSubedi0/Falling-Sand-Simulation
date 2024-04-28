@@ -16,23 +16,52 @@ struct position
 
     position(int xpos, int ypos)
     {
-        this->xpos =xpos;
+        this->xpos = xpos;
         this->ypos = ypos;
     }
 };
 
-
-void updatePosition(vector<Rectangle> &recs,vector<vector<int>> &grid)
+void updatePosition(vector<Rectangle> &recs, vector<vector<int>> &grid)
 {
-    for(int i=0;i<recs.size();i++)
+    for (int i = 0; i < recs.size(); i++)
     {
-        if(recs[i].y+1<winHeight)
+        if (recs[i].y + 1 < winHeight)
         {
-            if(grid[recs[i].x][recs[i].y +1] == 0)
-            {   
+
+            // Sida sida tala janxa khuru khuru
+            if (grid[recs[i].x][recs[i].y + 1] == 0)
+            {
                 grid[recs[i].x][recs[i].y] = 0;
-                grid[recs[i].x][recs[i].y+1] = 1;
-                recs[i].y +=1;    
+                grid[recs[i].x][recs[i].y + 1] = 1;
+                recs[i].y += 1;
+            }
+
+            // If tesko left ma khali xa right ma xaina
+            else if ((grid[recs[i].x - 1][recs[i].y + 1] == 0) && (grid[recs[i].x + 1][recs[i].y + 1] != 0))
+            {
+                grid[recs[i].x][recs[i].y] = 0;
+                grid[recs[i].x - 1][recs[i].y + 1] = 1;
+                recs[i].x -= 1;
+                recs[i].y += 1;
+            }
+
+            // If tesko right ma khali xa left ma xaina
+
+            else if ((grid[recs[i].x - 1][recs[i].y + 1] != 0) && (grid[recs[i].x + 1][recs[i].y + 1] == 0))
+            {
+                grid[recs[i].x][recs[i].y] = 0;
+                grid[recs[i].x + 1][recs[i].y + 1] = 1;
+                recs[i].x += 1;
+                recs[i].y += 1;
+            }
+
+            // If tesko left / Right both ma khali xa -> Prioritize Left falling
+            else if ((grid[recs[i].x - 1][recs[i].y + 1] == 0) && (grid[recs[i].x + 1][recs[i].y + 1] == 0))
+            {
+                grid[recs[i].x][recs[i].y] = 0;
+                grid[recs[i].x - 1][recs[i].y + 1] = 1;
+                recs[i].x -= 1;
+                recs[i].y += 1;
             }
         }
     }
@@ -40,39 +69,37 @@ void updatePosition(vector<Rectangle> &recs,vector<vector<int>> &grid)
 
 int main()
 {
-    InitWindow(winWidth,winHeight,"Sand");
+    InitWindow(winWidth, winHeight, "Sand");
     SetTargetFPS(targetFPS);
 
-
     vector<vector<int>> grid;
-    for(int i=0;i<winWidth;i++)
+    for (int i = 0; i < winWidth; i++)
     {
         vector<int> temp;
-        for(int j=0;j<winHeight;j++)
+        for (int j = 0; j < winHeight; j++)
         {
             temp.push_back(0);
         }
         grid.push_back(temp);
     }
-    
+
     vector<Rectangle> recs;
-    
+
     while (!WindowShouldClose())
     {
         BeginDrawing();
-        for(int i=0;i<recs.size();i++)
+        for (int i = 0; i < recs.size(); i++)
         {
-            DrawRectangleRec(recs[i],WHITE);
+            DrawRectangleRec(recs[i], WHITE);
         }
-        updatePosition(recs,grid);
-        
-        if(IsMouseButtonDown(0))
-        {
-            Rectangle rect = {GetMousePosition().x,GetMousePosition().y,1,1};
-            recs.push_back(rect);
-            grid[rect.x][rect.y]=1;
-        }
+        updatePosition(recs, grid);
 
+        if (IsMouseButtonDown(0))
+        {
+            Rectangle rect = {GetMousePosition().x, GetMousePosition().y, 1, 1};
+            recs.push_back(rect);
+            grid[rect.x][rect.y] = 1;
+        }
 
         ClearBackground(BLACK);
         EndDrawing();
