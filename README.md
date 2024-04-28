@@ -1,2 +1,2 @@
 # Falling-Sand-Simulation
-Not completed
+Nothing much, just sand falling here and there :)
